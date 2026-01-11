@@ -14,6 +14,7 @@ export default function FeedPage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [savedProperties, setSavedProperties] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'all' | 'saved'>('all');
   const router = useRouter();
 
   useEffect(() => {
@@ -104,6 +105,35 @@ export default function FeedPage() {
             </Link>
           </div>
         </div>
+
+        <div className="flex border-t border-gray-200">
+          <button
+            onClick={() => setActiveTab('all')}
+            className={`flex-1 py-3 text-sm font-medium transition-colors relative ${
+              activeTab === 'all'
+                ? 'text-[#037EBA]'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            All Properties
+            {activeTab === 'all' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#037EBA]"></div>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('saved')}
+            className={`flex-1 py-3 text-sm font-medium transition-colors relative ${
+              activeTab === 'saved'
+                ? 'text-[#037EBA]'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Saved
+            {activeTab === 'saved' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#037EBA]"></div>
+            )}
+          </button>
+        </div>
       </header>
 
       <main className="px-4 py-6 max-w-2xl mx-auto">
@@ -111,21 +141,43 @@ export default function FeedPage() {
           <div className="flex justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-[#037EBA]" />
           </div>
-        ) : properties.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">No properties available at the moment.</p>
-          </div>
+        ) : activeTab === 'all' ? (
+          properties.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No properties available at the moment.</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {properties.map((property) => (
+                <PropertyCard
+                  key={property.id}
+                  property={property}
+                  isSaved={savedProperties.has(property.id)}
+                  onSave={handleSaveProperty}
+                />
+              ))}
+            </div>
+          )
         ) : (
-          <div className="space-y-6">
-            {properties.map((property) => (
-              <PropertyCard
-                key={property.id}
-                property={property}
-                isSaved={savedProperties.has(property.id)}
-                onSave={handleSaveProperty}
-              />
-            ))}
-          </div>
+          properties.filter(p => savedProperties.has(p.id)).length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No saved properties yet.</p>
+              <p className="text-sm text-gray-500 mt-2">Start saving properties to see them here!</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {properties
+                .filter(property => savedProperties.has(property.id))
+                .map((property) => (
+                  <PropertyCard
+                    key={property.id}
+                    property={property}
+                    isSaved={true}
+                    onSave={handleSaveProperty}
+                  />
+                ))}
+            </div>
+          )
         )}
       </main>
 

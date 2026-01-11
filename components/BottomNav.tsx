@@ -12,7 +12,6 @@ export default function BottomNav() {
     { href: '/explore', icon: Search, label: 'Explore' },
     { href: '/virtual-tours', icon: Video, label: 'Tours' },
     { href: '/news', icon: Newspaper, label: 'News' },
-    { href: '/saved', icon: Heart, label: 'Saved' },
     { href: '/profile', icon: User, label: 'Profile' },
   ];
 
